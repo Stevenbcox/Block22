@@ -51,15 +51,14 @@ function getEventFromHash() {
  * GET the list of guests from the API to update state
  */
 async function getGuests() {
-    try {
-      const response = await fetch("/api/guests");
-      const data = await response.json();
-      state.guests = data;
-      } catch (e) {
-          console.error(e);
-          return [];
-        }
-    };
+  try {
+    const response = await fetch(API + "/guests");
+    const json = await response.json();
+    state.guests = json.data;
+  } catch (error) {
+    console.error(error);
+  }
+}
 
 /**
  * Render the list of guests for the currently selected event
