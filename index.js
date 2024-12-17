@@ -51,8 +51,15 @@ function getEventFromHash() {
  * GET the list of guests from the API to update state
  */
 async function getGuests() {
-  // TODO
-}
+    try {
+      const response = await fetch("/api/guests");
+      const data = await response.json();
+      state.guests = data;
+      } catch (e) {
+          console.error(e);
+          return [];
+        }
+    };
 
 /**
  * Render the list of guests for the currently selected event
@@ -60,8 +67,29 @@ async function getGuests() {
 function renderGuests() {
   $guests.hidden = false;
 
-  // TODO: Render the list of guests for the currently selected event
-  $guestList.innerHTML = "<li>No guests yet!</li>";
+  // Get guests for the current party
+  const rsvps = state.rsvps.filter(
+    (rsvp) => rsvp.eventId === state.event.id
+  );
+  const guestIds = rsvps.map((rsvp) => rsvp.guestId);
+  const guests = state.guests.filter((guest) => guestIds.includes(guest.id));
+
+  if (!guests.length) {
+    $guestList.innerHTML = "<li>No guests yet!</li>";
+    return;
+  }
+
+  const guestList = guests.map((guest) => {
+    const guestInfo = document.createElement("li");
+    guestInfo.innerHTML = `
+      <span>${guest.name}</span>
+      <span>${guest.email}</span>
+      <span>${guest.phone}</span>
+    `;
+    return guestInfo;
+  });
+
+  $guestList.replaceChildren(...guestList);
 }
 
 // === No need to edit anything below this line! ===
